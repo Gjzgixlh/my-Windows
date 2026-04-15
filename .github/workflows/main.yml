@@ -16,8 +16,6 @@ jobs:
       run: Start-Process .\ngrok\ngrok.exe -ArgumentList "tcp 3389"
     - name: Keep Alive
       run: |
-        Set-Service -Name TermService -StartupType Automatic
-        Start-Service TermService
         $url = (Invoke-WebRequest -Uri http://localhost:4040/api/tunnels -UseBasicParsing | ConvertFrom-Json).tunnels[0].public_url
         Write-Host "--- 接続情報 ---"
         Write-Host "Address: $($url.Replace('tcp://', ''))"
