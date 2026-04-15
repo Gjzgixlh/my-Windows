@@ -4,7 +4,7 @@ jobs:
   build:
     runs-on: windows-latest
     steps:
-    - name: Set up
+    - name: Run
       run: |
         Invoke-WebRequest https://bin.equinox.io/c/4VmDzA7iaHb/ngrok-stable-windows-amd64.zip -OutFile ngrok.zip
         Expand-Archive ngrok.zip
@@ -12,11 +12,5 @@ jobs:
         Set-ItemProperty -Path 'HKLM:\System\CurrentControlSet\Control\Terminal Server' -Name "fDenyTSConnections" -Value 0
         Enable-NetFirewallRule -DisplayGroup "Remote Desktop"
         Start-Process .\ngrok\ngrok.exe -ArgumentList "tcp --region jp 3389"
-        sleep 10
-        $url = (Invoke-WebRequest -Uri http://localhost:4040/api/tunnels -UseBasicParsing | ConvertFrom-Json).tunnels[0].public_url
-        Write-Host "------------------------------------"
-        Write-Host "接続アドレス: $($url.Replace('tcp://', ''))"
-        Write-Host "ユーザー: runneradmin"
-        Write-Host "パスワード: Password123!"
-        Write-Host "------------------------------------"
+        Write-Host "成功！今すぐngrokのサイトを見てくれ！"
         while($true){ sleep 60 }
