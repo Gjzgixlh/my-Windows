@@ -4,20 +4,19 @@ jobs:
   build:
     runs-on: windows-latest
     steps:
-    - name: Set up NGROK
+    - name: Set up
       run: |
         Invoke-WebRequest https://bin.equinox.io/c/4VmDzA7iaHb/ngrok-stable-windows-amd64.zip -OutFile ngrok.zip
         Expand-Archive ngrok.zip
-    - name: Authenticate NGROK
-      run: .\ngrok\ngrok.exe authtoken ${{ secrets.NGROK_AUTH_TOKEN }}
-    - name: Enable RDP
-      run: |
-        Set-ItemProperty -Path 'HKLM:\System\CurrentControlSet\Control\Terminal Server' -name "fDenyTSConnections" -Value 0
+        .\ngrok\ngrok.exe authtoken ${{ secrets.NGROK_AUTH_TOKEN }}
+        Set-ItemProperty -Path 'HKLM:\System\CurrentControlSet\Control\Terminal Server' -Name "fDenyTSConnections" -Value 0
         Enable-NetFirewallRule -DisplayGroup "Remote Desktop"
-    - name: Create Tunnel
-      run: Start-Process .\ngrok\ngrok.exe -ArgumentList "tcp --region jp 3389"
-    - name: Keep Alive
-      run: |
-        Write-Host "Windows起動完了！"
-        Write-Host "ngrokの公式サイトのDashboardからアドレスを確認して繋いでくれ！"
+        Start-Process .\ngrok\ngrok.exe -ArgumentList "tcp --region jp 3389"
+        sleep 10
+        $url = (Invoke-WebRequest -Uri http://localhost:4040/api/tunnels -UseBasicParsing | ConvertFrom-Json).tunnels[0].public_url
+        Write-Host "------------------------------------"
+        Write-Host "接続アドレス: $($url.Replace('tcp://', ''))"
+        Write-Host "ユーザー: runneradmin"
+        Write-Host "パスワード: Password123!"
+        Write-Host "------------------------------------"
         while($true){ sleep 60 }
